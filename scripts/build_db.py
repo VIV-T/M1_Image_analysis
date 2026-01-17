@@ -3,8 +3,10 @@ import numpy as np
 from pathlib import Path
 import glob
 import os
+import string 
 
-from clean_db import clean_db
+from utils.clean_dir import clean_dir
+from utils.extract_contour import extract_contours
 
 # Use relative path from scripts folder to data folder
 script_dir = Path(__file__).parent
@@ -15,7 +17,10 @@ characters_folder = data_folder / 'characters'
 
 
 def build_db():
-    clean_db()
+    for letter in string.ascii_lowercase:
+        clean_dir(dir=f'{characters_folder}/{letter}')
+    print("Database cleaned succefully !")
+
     raw_files = glob.glob(f'{raw_data_folder}/*')
 
     for raw_file in raw_files :
@@ -31,24 +36,8 @@ def build_db():
         else : 
             THRESHOLD = 40
 
-        # exctract the characters from the raw image
-        image = cv2.imread(raw_file)
-
-        # Convert to gray level.
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-        # Add a blur to reduce noise.
-        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-
-        # Appliquer un seuil binaire (inversé pour avoir le texte en blanc)
-        _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-
-        # Nettoyer l'image avec des opérations morphologiques
-        kernel = np.ones((2, 2), np.uint8)
-        cleaned = cv2.morphologyEx(binary, cv2.MORPH_OPEN, kernel, iterations=1)
-
-        # Détecter les contours
-        contours, _ = cv2.findContours(cleaned, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        ## Exctract the characters from the raw image
+        gray, contours = extract_contours(raw_file=raw_file)
 
         # Parcourir les contours et isoler les caractères
         for i, contour in enumerate(contours):
