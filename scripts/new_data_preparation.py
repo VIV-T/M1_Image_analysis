@@ -68,7 +68,7 @@ def create_df_to_label():
 
 
 # Main function
-def prepare_new_data(filename : str = "lancegoat.jpg", features_extraction_method : str|None = None) :
+def prepare_new_data(filename : str = "lancegoat.jpg", features_extraction_method : str|None = None, prepare_new_data : bool = False) :
     filepath = os.path.join(words_folder, filename)
     
     # clean the folder containing the characters => need to be empty
@@ -81,6 +81,6 @@ def prepare_new_data(filename : str = "lancegoat.jpg", features_extraction_metho
     df_char = create_df_to_label()
 
     # features extraction
-    X_new, _ = features_extraction(df_labels=df_char)
+    X_new, y_new = features_extraction(df_labels=df_char, method=features_extraction_method, prepare_new_data=prepare_new_data)
 
     return X_new

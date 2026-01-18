@@ -6,7 +6,9 @@ import glob
 import pandas as pd
 
 from utils.features_extraction_methods.HOG import extract_hog_features
-from utils.features_extraction_methods.HU import extract_handcrafted_features
+from utils.features_extraction_methods.HU import extract_hu_features
+from utils.features_extraction_methods.GEOMETRIC import extract_geometric_features
+from utils.features_extraction_methods.eighteen import extract_handcrafted_features
 
 
 
@@ -18,14 +20,14 @@ IMAGES_DIR = os.path.join(BASE_DIR, "images_dir")
 CSV_PATH = os.path.join(IMAGES_DIR, "labels.csv")
 
 # Use relative path from scripts folder to data folder
-script_dir = Path(__file__).parent
+script_dir = Path(__file__).parent.parent
 data_folder = script_dir.parent / 'data'
 characters_folder = data_folder / 'characters'
 features_folder = data_folder / 'features'
 
 
 # Main function
-def features_extraction(df_labels : pd.DataFrame, method : str|None = None) :
+def features_extraction(df_labels : pd.DataFrame, method : str|None = None, prepare_new_data : bool = False) :
     try :
         df_labels["labels"]
         complete = True     # the df contains the data and the labels 
@@ -47,7 +49,17 @@ def features_extraction(df_labels : pd.DataFrame, method : str|None = None) :
     # features extraction
     for index, row in df_labels.iterrows():
         print(row["filepath"])
-        feat = extract_hog_features(row["filepath"])   ### To modify.
+        match method :
+            case "HOG" :
+                feat = extract_hog_features(row["filepath"])  
+            case "HU" :
+                feat = extract_hu_features(row["filepath"])   
+            case "GEOMETRIC" :
+                feat = extract_geometric_features(row["filepath"])  
+            case "eighteen" :
+                feat = extract_handcrafted_features(row["filepath"])  
+
+        
         if feat is not None:
             features.append(feat)
             if complete :
@@ -55,13 +67,15 @@ def features_extraction(df_labels : pd.DataFrame, method : str|None = None) :
 
     X = np.array(features)
     y = np.array(labels)
+    
+    print("Features extraction finished !\n")
 
-    # print("X shape:", X.shape)  # (N_images, HOG_dim)
-    # print("y shape:", y.shape)
-
-    # np.save(f"{features_folder}/features_HOG.npy", X)
-    # np.save(f"{features_folder}/labels_HOG.npy", y)
-
-    print("Number of samples:", len(labels))
-
-    return X, y
+    if not prepare_new_data :
+        # Save features and labels
+        method_folder = features_folder / method
+        os.makedirs(method_folder, exist_ok=True)
+        np.save(f"{method_folder}/features_{method}.npy", X)
+        np.save(f"{method_folder}/labels_{method}.npy", y)
+        return True
+    else :    
+        return X, y

@@ -20,7 +20,7 @@ import numpy as np
 # --------------------------------------------------
 # Feature extraction function
 # --------------------------------------------------
-def extract_handcrafted_features(img_path):
+def extract_geometric_features(img_path):
     img = cv2.imread(img_path, cv2.IMREAD_GRAYSCALE)
     if img is None:
         print(f"Cannot read image: {img_path}")

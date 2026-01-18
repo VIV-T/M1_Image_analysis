@@ -39,17 +39,17 @@ def build_db():
         ## Exctract the characters from the raw image
         gray, contours = extract_contours(raw_file=raw_file)
 
-        # Parcourir les contours et isoler les caractères
+        # Loop through the contours and save each character as a separate image
         for i, contour in enumerate(contours):
-            # Obtenir le rectangle englobant du contour
+            # Get bounding box for each contour
             (x, y, w, h) = cv2.boundingRect(contour)
 
-            # Filtrer les contours trop petits ou trop grands
-            if THRESHOLD < w and THRESHOLD < h :  # Ajuste ces valeurs selon la taille de tes caractères
-                # Extraire le caractère
+            # Filter out small contours that may be noise
+            if THRESHOLD < w and THRESHOLD < h :  # Ajust the threshold as needed
+                # Extract the character from the grayscale image
                 char_img = gray[y:y+h, x:x+w]
 
-                # Sauvegarder le caractère en tant qu'image
+                # Save the character image to the corresponding folder
                 cv2.imwrite(f'{letter_folder}/char_{i}.png', char_img)
 
         print(f"Nombre de caractères isolés pour la lettre {letter} : {len([c for c in contours if THRESHOLD < cv2.boundingRect(c)[2] and THRESHOLD < cv2.boundingRect(c)[3]])},    THRESHOLD : {THRESHOLD}")
