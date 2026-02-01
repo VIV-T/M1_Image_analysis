@@ -1,1 +1,4 @@
-3_SIFT_detectors/.venv
+1_handwritten_recognition/.venv
+2_SIFT_detectors/.venv
+3_Tennis_video_analysis/.venv
+*.npy
