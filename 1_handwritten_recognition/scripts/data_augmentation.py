@@ -53,7 +53,7 @@ def augment_image(img):
 
 # --- EXECUTION ---
 def data_augmentation():
-    print("Début de l'augmentation des données...")
+    print("Beginning of the data augmentation.")
 
     for letter in os.listdir(characters_folder):
         letter_path = os.path.join(characters_folder, letter)
@@ -77,4 +77,4 @@ def data_augmentation():
 
         print(f"Augmentation done for letter : {letter}")
 
-    print(f"Terminé ! Chaque lettre a maintenant environ {len(images_originales) * (aug_factor + 1)} exemples.")
+    print(f"Done ! Each letter have an average of {len(images_originales) * (aug_factor + 1)} examples.")
